@@ -42,8 +42,8 @@ tasks {
 }
 
 bintray {
-    user = project.properties["bintrayUser"] as String
-    key = project.properties["bintrayKey"] as String
+    user = project.properties["bintrayUser"] as String?
+    key = project.properties["bintrayKey"] as String?
     with(pkg) {
         repo = "maven"
         name = "LeafletFX"
