@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LeafletFX</title>
+
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+
+    <style>
+        html, body, #map {
+            height: 100%;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        if (typeof JSON.decycle !== "function") {
+            JSON.decycle = function decycle(object, replacer) {
+                "use strict";
+
+                var objects = new WeakMap();     // object to path mappings
+
+                return (function derez(value, path) {
+                    var old_path;   // The path of an earlier occurance of value
+                    var nu;         // The new object or array
+
+                    if (replacer !== undefined) {
+                        value = replacer(value);
+                    }
+
+                    if (
+                        typeof value === "object"
+                        && value !== null
+                        && !(value instanceof Boolean)
+                        && !(value instanceof Date)
+                        && !(value instanceof Number)
+                        && !(value instanceof RegExp)
+                        && !(value instanceof String)
+                    ) {
+                        old_path = objects.get(value);
+                        if (old_path !== undefined) {
+                            return {$ref: old_path};
+                        }
+
+                        objects.set(value, path);
+
+                        if (Array.isArray(value)) {
+                            nu = [];
+                            value.forEach(function (element, i) {
+                                nu[i] = derez(element, path + "[" + i + "]");
+                            });
+                        } else {
+                            nu = {};
+                            Object.keys(value).forEach(function (name) {
+                                nu[name] = derez(
+                                    value[name],
+                                    path + "[" + JSON.stringify(name) + "]"
+                                );
+                            });
+                        }
+                        return nu;
+                    }
+                    return value;
+                }(object, "$"));
+            };
+        }
+
+        if (typeof JSON.retrocycle !== "function") {
+            JSON.retrocycle = function retrocycle($) {
+                "use strict";
+
+                var px = /^\$(?:\[(?:\d+|"(?:[^\\"\u0000-\u001f]|\\(?:[\\"\/bfnrt]|u[0-9a-zA-Z]{4}))*")\])*$/;
+
+                (function rez(value) {
+                    if (value && typeof value === "object") {
+                        if (Array.isArray(value)) {
+                            value.forEach(function (element, i) {
+                                if (typeof element === "object" && element !== null) {
+                                    var path = element.$ref;
+                                    if (typeof path === "string" && px.test(path)) {
+                                        value[i] = eval(path);
+                                    } else {
+                                        rez(element);
+                                    }
+                                }
+                            });
+                        } else {
+                            Object.keys(value).forEach(function (name) {
+                                var item = value[name];
+                                if (typeof item === "object" && item !== null) {
+                                    var path = item.$ref;
+                                    if (typeof path === "string" && px.test(path)) {
+                                        value[name] = eval(path);
+                                    } else {
+                                        rez(item);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }($));
+                return $;
+            };
+        }
+    </script>
+    <script>
+        window.__evented = {
+            callbackMap: {
+            },
+            newCallback: function(id) {
+                const callback = function (e) {
+                    window.__evented.javaCallback.onEvent(id, JSON.stringify(JSON.decycle(e)));
+                }
+                window.__evented.callbackMap[id] = callback;
+                return callback;
+            },
+            deleteCallback: function(id) {
+                const callback = window.__evented.callbackMap[id];
+                delete window.__evented.callbackMap[id];
+                return callback;
+            }
+        };
+    </script>
+</head>
+<body>
+<div id="map"/>
+</body>
+</html>
