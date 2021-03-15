@@ -30,9 +30,9 @@ javafx {
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.12.1")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.12.1")
-    implementation("org.apache.commons:commons-lang3:3.11")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.12.2")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.12.2")
+    implementation("org.apache.commons:commons-lang3:3.12.0")
 }
 
 tasks {
