@@ -56,6 +56,7 @@ publishing {
             from(components["java"])
 
             pom {
+                name.set("LeafletFX")
                 description.set("Leaflet for JavaFX.")
                 url.set("https://github.com/ngyewch/LeafletFX")
                 licenses {
@@ -68,6 +69,12 @@ publishing {
                     connection.set("scm:git:git@github.com:ngyewch/LeafletFX.git")
                     developerConnection.set("scm:git:git@github.com:ngyewch/LeafletFX.git")
                     url.set("https://github.com/ngyewch/LeafletFX")
+                }
+                developers {
+                    developer {
+                        id.set("ngyewch")
+                        name.set("Nick Ng")
+                    }
                 }
             }
         }
