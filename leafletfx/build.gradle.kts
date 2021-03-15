@@ -1,14 +1,16 @@
 plugins {
     `java-library`
     `maven-publish`
+    signing
     id("ca.cutterslade.analyze")
     id("com.github.ben-manes.versions")
-    id("com.jfrog.bintray") version "1.8.5"
     id("org.openjfx.javafxplugin")
 }
 
 project.group = "com.github.ngyewch.leafletfx"
 project.version = "0.1.0"
+
+val isReleaseVersion = !(project.version as String).endsWith("SNAPSHOT")
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
@@ -39,19 +41,9 @@ tasks {
     withType(ca.cutterslade.gradle.analyze.AnalyzeDependenciesTask::class) {
         justWarn = true
     }
-}
-
-bintray {
-    user = project.properties["bintrayUser"] as String?
-    key = project.properties["bintrayKey"] as String?
-    with(pkg) {
-        repo = "maven"
-        name = "LeafletFX"
-        with(version) {
-            name = project.version as String
-        }
+    withType(Sign::class) {
+        onlyIf { isReleaseVersion }
     }
-    setPublications("maven")
 }
 
 publishing {
@@ -62,6 +54,37 @@ publishing {
             version = project.version as String
 
             from(components["java"])
+
+            pom {
+                description.set("Leaflet for JavaFX.")
+                url.set("https://github.com/ngyewch/LeafletFX")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://github.com/ngyewch/LeafletFX/blob/main/LICENSE")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git@github.com:ngyewch/LeafletFX.git")
+                    developerConnection.set("scm:git:git@github.com:ngyewch/LeafletFX.git")
+                    url.set("https://github.com/ngyewch/LeafletFX")
+                }
+            }
         }
     }
+    repositories {
+        maven {
+            setUrl("https://s01.oss.sonatype.org/")
+            credentials {
+                val ossrhUsername: String? by project
+                val ossrhPassword: String? by project
+                username = ossrhUsername
+                password = ossrhPassword
+            }
+        }
+    }
+}
+
+signing {
+    sign(publishing.publications["maven"])
 }
