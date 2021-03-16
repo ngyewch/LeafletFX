@@ -3,7 +3,7 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/ngyewch/LeafletFX)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ngyewch/LeafletFX/Java%20CI)
 [![javadoc](https://javadoc.io/badge2/com.github.ngyewch.leafletfx/leafletfx/javadoc.svg)](https://javadoc.io/doc/com.github.ngyewch.leafletfx/leafletfx)
-![Bintray](https://img.shields.io/bintray/v/ngyewch/maven/LeafletFX)
+![Maven Central](https://img.shields.io/maven-central/v/com.github.ngyewch.leafletfx/leafletfx)
 
 [Leaflet](https://leafletjs.com/) for JavaFX.
 
@@ -23,6 +23,6 @@ dependencies {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 ```
